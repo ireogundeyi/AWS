@@ -1,0 +1,45 @@
+---
+# Have a look at docs for useful modules and keywords to use
+# Look at the AWS security group details to help see what details 
+# are required when creating a security group
+
+- name: Creating a Security Group
+  hosts: localhost
+  gather_facts: false
+  vars: 
+    region: us-east-1
+    security_group_name: test1
+    security_group_description: "Test Rules for Inbound and Outbound Rules"
+    group_id: sg-12345 # placeholder (need to double check if possible) 
+    inbound_rules: 
+      # Protocol is TCP
+      # Port is 22 so only allows SSH connections 
+      # IP address that can access are all IPs
+      - { proto: tcp, port: 22, cidr_ip: 0.0.0.0/0, rule_desc: allow all on port 80} 
+    outbound_rules:
+      # Protocal is all 
+      # Port is all so don't need to add
+      # Send to all IPs addrs so 0.0.0.0/0
+      - { proto: all, cidr_ip: 0.0.0.0/0 }
+
+  tasks: 
+    - name: Create Security Group
+      ec2_security_group: 
+        name: "{{ security_group_name }}"
+        description: "{{ security_group_description }}"
+        region: "{{ region }}"
+        rules: "{{ inbound_rules + outbound_rules }}"
+        state: present
+        register: security_group # To store the security group ID 
+    
+    # need to double check
+    # but you should be able to use newly created sg_id to delete
+    - name: Delete Security Group by its ID that you just created
+      ec2_security_group: 
+        region: "{{ region }}"
+        group_id: "{{ security_group.group_id }}" 
+        state: absent # Terminates it
+
+    - name: Display Security Group Information 
+      debug: 
+        var: security_group
