@@ -1,24 +1,25 @@
----
-# This is to create an instance 
+--- 
 - name: Provide EC2 Instances
   hosts: localhost # Where the code will be executed 
-  gather_facts: false # Useful for gathering information but not needed
+  gather_facts: false # Useful for gathering information but not needed 
   vars: 
+    name: Test1
     region: us-east-1
     instance_type: t2.micro 
-    security_group: default
-    ami_id: ami_1234 # Random placeholder ami_id
-    aws: simplephplogin 
-    count: 1
+    security_group: test1
+    ami_id: ami-0588dd3bd2127f502 # Random placeholder ami_id
+    keypair: phpsimplelogin
+    count: 1 
 
   tasks:
     - name: Create EC2 instance
-      ec2_instance :  
+      amazon.aws.ec2_instance:  
+        name: "{{ name }}"
         region: "{{ region }}"
         instance_type: "{{ instance_type }}"
-        security_group: "{{ secuirty_group }}"
-        image: "{{ ami_id }}"
-        keypair: simplephplogin
+        security_group: "{{ security_group }}"
+        image_id: "{{ ami_id }}"
+        key_name: "{{ keypair }}"
         count: "{{ count }}"
       register: ec2_instances
 
