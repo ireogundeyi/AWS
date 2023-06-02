@@ -32,8 +32,6 @@
         state: present
       register: security_group # To store the security group ID 
     
-    # need to double check
-    # but you should be able to use newly created sg_id to delete
 
     # - name: Delete Security Group by its ID that you just created
     #  amazon.aws.ec2_security_group: 
