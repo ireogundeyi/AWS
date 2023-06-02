@@ -1,0 +1,30 @@
+---
+- name: Creating S3 Buckets and upload a file
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:   
+    bucket_name: test1
+    region: us-east-1
+    versioning: true
+    file_path: ~/Documents/Disso.odt
+    file_name: Disso.odt
+
+  tasks: 
+  - name: Create a bucket
+    amazon.aws.s3_bucket: 
+      name: "{{ bucket_name }}"
+      state: present
+      encryption: "aws:kms"
+      poilcy: null
+      versioning: "{{ versioning }}"
+
+  - name: Uploading a file into the S3 bucket
+    amazon.aws.s3_object: 
+      bucket: "{{ bucket_name }}"
+      object: "{{ file_name }}"
+      src: "{{ file_path }}"
+      mode: put
+      permission: public-read
+
+
